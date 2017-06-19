@@ -1,0 +1,69 @@
+---
+title: "Tooth Growth Data Analysis"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+tg <- ToothGrowth
+```
+
+The Tooth Growth data provided in R measures the effect of Vitamin C on tooth growth in guinea pigs. Each animal received one of three dose levels of vitamin C, delivered by either orange juice or ascorbic acid. The dose levels were 0.5, 1 and 2. The results were measured in the length of odontoblasts, cells responsible for tooth growth.
+
+## Initial Data Summary
+
+The resulting lengths varied greatly, from 4.2 to 33.9. An initial glance shows that vitamin C delivered by OJ may have been more effective on average than vitamin C delivered by ascorbic acid (coded as VC):
+
+```{r}
+tg %>% group_by(supp) %>% summarise("Average Length" = mean(len))
+```
+
+And a breakdown of average length by dose and delivery appears to indicate more effective tooth growth with higher doses of both VC and OJ:
+
+```{r}
+tg %>% group_by(supp, dose) %>% summarise("Average Length" = mean(len))
+```
+
+## Data Analysis
+
+Dividing the data up by dose and delivery method, or "supp", we first look at the differences in a dose of 0.5 administered through orange juice (OJ) and ascorbic acid (VC). The null hypothesis is that there is no difference in average length between the two methods. The alternative hypothesis is that OJ has a greater average length than VC.
+
+```{r}
+lowVC <- filter(tg, dose == 0.5 & supp == "VC")
+lowOJ <- filter(tg, dose == 0.5 & supp == "OJ")
+t.test(lowOJ$len, lowVC$len, alternative = "greater")
+```
+
+The results of a t.test show that p < 0.05 and that the confidence interval is entirely greater than zero, indicating that we should reject the null hypothesis and find that OJ has a greater average length than VC for doses of 0.5.
+
+Conducting the same analysis for a dose of 1, we find:
+```{r}
+midVC <- filter(tg, dose == 1 & supp == "VC")
+midOJ <- filter(tg, dose == 1 & supp == "OJ")
+t.test(midOJ$len, midVC$len, alternative = "greater")
+```
+
+The results of the t.test show that p < 0.05 and the confidence interval is entirely greater than zero, again indicating that we should reject the null hypothesis that the difference in means is zero and find that OJ has a greater average length than VC for doses of 1.
+
+Finally, we conduct the same analysis for a dose of 2, finding:
+```{r}
+hiVC <- filter(tg, dose == 2 & supp == "VC")
+hiOJ <- filter(tg, dose == 2 & supp == "OJ")
+t.test(hiOJ$len, hiVC$len, alternative = "greater")
+```
+
+The results of the t.test reveal a p-value of 0.51, which is far greater than 0.05, and the confidence interval includes zero. For doses of 2, we therefore do not reject the null hypothesis that the difference in means is zero. Our results indicate that there may be no difference in effectiveness of VC and OJ in delivering doses of 2.
+
+## Conclusions
+
+For doses of 0.5 and 1, guinea pigs receiving the doses delivered by orange juice (OJ) had greater length of odontoblasts than those who received the doses delivered by ascorbic acid (VC) (p < 0.5). For doses of 2, however, no such finding was made, failing to reject the null hypothesis that there is no difference in average length of odontoblasts between different delivery methods for doses of 2.
+
+The assumptions needed for this conclusion rest on the data being a representative sample of the total population and that it is approximately normally distributed, warranting a t.test.
+
+
+
+
