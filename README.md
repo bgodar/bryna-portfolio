@@ -1,5 +1,5 @@
 # bryna-portfolio
-Bryna Godar portfolio website
+Bryna Godar portfolio
 
 <!DOCTYPE html>
 <html>
